@@ -12,10 +12,7 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import concurrent.futures
 
-symbol = "SATU"
-url = f"https://bvb.ro/FinancialInstruments/Details/FinancialInstrumentsDetails.aspx?s={symbol}"
-driver = webdriver.Chrome()
-driver.get(url)
+DEBUG_MODE = True
 delay = 2
 
 def get_price(driver):
@@ -83,11 +80,17 @@ def get_st_liab(driver):
     except TimeoutException:
         print(f"Loading took too much time!")
 
+    if total_st_liab[0].isnumeric() == False:
+        print("ST is not numeric")
+        return 0
+    print(total_st_liab)
     if rev_advance:
-        try:
+        if rev_advance[0].isnumeric():
             return int(rev_advance.replace(",", "")) + int(total_st_liab.replace(",", ""))
-        except ValueError:
-            return int(total_st_liab.replace(",", ""))
+        else:
+            rev_advance = 0
+    else:
+        return int(total_st_liab.replace(",", ""))
 
 
 def get_lt_liab(driver):
@@ -103,10 +106,10 @@ def get_lt_liab(driver):
         if WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH,"""/html/body/form/div[3]/div/div[1]/div[3]/div/div[1]/div/div/div/table/tbody/tr[6]/td[1]"""))).text == "Debtors - due after more than one year":
             total_lt_liab = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH,"""/html/body/form/div[3]/div/div[1]/div[3]/div/div[1]/div/div/div/table/tbody/tr[6]/td[2]"""))).text
             #print(f"Longterm debt: {total_lt_liab}.")
-
     except TimeoutException:
         print(f"Loading took too much time!")
-    if total_lt_liab.isnumeric() == False:
+    if total_lt_liab[0].isnumeric() == False:
+        print("LT is not numeric")
         return 0
     return int(total_lt_liab.replace(",", ""))
 
@@ -128,15 +131,31 @@ def get_financials(driver):
     return [price, shares, cur_assets, st_liab, lt_liab]
 
 def compute_NNR(price, shares, cur_assets, st_liab, lt_liab):
+    if st_liab == None:
+        st_liab = 0
+    if lt_liab == None:
+        lt_liab = 0
     return round((((cur_assets - (st_liab + lt_liab)) / shares) / price) * 100 , 2)
 
 # get symbols list
 with open("symbols.txt", "r") as file:
     symbols = file.read().splitlines()
 
+for symbol in symbols:
+    url = f"https://bvb.ro/FinancialInstruments/Details/FinancialInstrumentsDetails.aspx?s={symbol}"
+    driver = webdriver.Chrome()
+    driver.get(url)
+    fin = get_financials(driver)
+    driver.quit()
+    nnr = compute_NNR(fin[0],fin[1],fin[2],fin[3],fin[4])
+    if DEBUG_MODE:
+        print(f"[{symbol}] Price = {fin[0]}")
+        print(f"[{symbol}] Shares = {fin[1]}")
+        print(f"[{symbol}] Current assets = {fin[2]}")
+        print(f"[{symbol}] ST Liabilities = {fin[3]}")
+        print(f"[{symbol}] LT Liabilities = {fin[4]}")
 
-fin = get_financials(driver)
-print(compute_NNR(fin[0],fin[1],fin[2],fin[3],fin[4]))
 
-driver.quit()
+    print(symbol, nnr)
+
 
