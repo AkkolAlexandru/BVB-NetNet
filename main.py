@@ -12,7 +12,8 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import concurrent.futures
 
-DEBUG_MODE = True
+results = [];
+DEBUG_MODE = False
 delay = 2
 
 def get_price(driver):
@@ -83,7 +84,6 @@ def get_st_liab(driver):
     if total_st_liab[0].isnumeric() == False:
         print("ST is not numeric")
         return 0
-    print(total_st_liab)
     if rev_advance:
         if rev_advance[0].isnumeric():
             return int(rev_advance.replace(",", "")) + int(total_st_liab.replace(",", ""))
@@ -141,7 +141,7 @@ def compute_NNR(price, shares, cur_assets, st_liab, lt_liab):
 with open("symbols.txt", "r") as file:
     symbols = file.read().splitlines()
 
-for symbol in symbols:
+def run_scraper(symbol):
     url = f"https://bvb.ro/FinancialInstruments/Details/FinancialInstrumentsDetails.aspx?s={symbol}"
     driver = webdriver.Chrome()
     driver.get(url)
@@ -154,8 +154,12 @@ for symbol in symbols:
         print(f"[{symbol}] Current assets = {fin[2]}")
         print(f"[{symbol}] ST Liabilities = {fin[3]}")
         print(f"[{symbol}] LT Liabilities = {fin[4]}")
+        print(f"[{symbol}] NNR Ratio = {nnr}")
+    return {symbol:nnr}
 
+for symbol in symbols:
+    results.append(run_scraper(symbol))
+    print(results)
 
-    print(symbol, nnr)
 
 
