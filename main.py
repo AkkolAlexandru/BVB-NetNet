@@ -1,16 +1,9 @@
-from bs4 import BeautifulSoup
-from urllib.request import Request, urlopen
-import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.poolmanager import PoolManager
-import ssl
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import pandas as pd
-import concurrent.futures
+
 
 results = [];
 DEBUG_MODE = False
