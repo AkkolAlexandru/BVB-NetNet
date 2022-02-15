@@ -11,13 +11,17 @@ delay = 2
 def get_price(driver):
     global delay
     data = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH,"/html/body/form/div[3]/div/div[1]/div[1]/div[2]/div[1]/div[2]/div[3]/div[1]/div/strong")))
+
+   #Exceptions
     if data.text == None:
+        print("price error")
         return None
     try:
         if data.text[0].isnumeric() == False:
             print("Price is not numeric")
             return None
     except IndexError:
+        print("price error")
         return None
 
     return float(data.text)
@@ -38,7 +42,10 @@ def get_cur_assets(driver):
             #print(f"Current assets: {current_assets}.")
     except TimeoutException:
         print(f"Loading took too much time!")
+
+    #Exceptions
     if current_assets == None:
+        print("current asset error")
         return None
     return int(current_assets.replace(",", ""))
 
@@ -51,7 +58,9 @@ def get_shares_outs(driver):
         if item.isdigit():
             shares_outstanding += item
 
+    #Exceptions
     if shares_outstanding == None:
+        print("shares outstanding error")
         return None
     return int(shares_outstanding)
 
@@ -73,7 +82,7 @@ def get_st_liab(driver):
                                                                               """/html/body/form/div[3]/div/div[1]/div[3]/div/div[1]/div/div/div/table/tbody/tr[3]/td[1]"""))).text == "Debtors - due within one year":
             total_st_liab = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH,
                                                                                                """/html/body/form/div[3]/div/div[1]/div[3]/div/div[1]/div/div/div/table/tbody/tr[3]/td[2]"""))).text
-            # print(f"Shortterm debt: {total_st_liab}.")
+            #print(f"Shortterm debt: {total_st_liab}.")
 
         # if revenue advance
         if WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH,
@@ -85,7 +94,9 @@ def get_st_liab(driver):
     except TimeoutException:
         print(f"Loading took too much time!")
 
+    #Exceptions
     if total_st_liab == None:
+        print("ST Liabilities error")
         return None
 
     if total_st_liab[0].isnumeric() == False:
@@ -116,7 +127,9 @@ def get_lt_liab(driver):
     except TimeoutException:
         print(f"Loading took too much time!")
 
+    #Exceptions
     if total_lt_liab == None:
+        print("LT Liabilities error")
         return None
 
     if total_lt_liab[0].isnumeric() == False:
@@ -169,6 +182,7 @@ def run_scraper(symbol):
     return {symbol:nnr}
 
 for symbol in symbols:
+    symbol="sif1"
     results.append(run_scraper(symbol))
     print(results)
 
