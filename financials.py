@@ -3,7 +3,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
-DEBUG_MODE_FINANCIALS = True
+DEBUG_MODE_FINANCIALS = False
 delay = 2
 
 def get_status(driver):
@@ -139,7 +139,10 @@ def get_lt_liab(driver):
             return None
 
     if total_lt_liab:
-        total_lt_liab = total_lt_liab.replace(",", "")
+        if total_lt_liab[0].isnumeric():
+            total_lt_liab = total_lt_liab.replace(",", "")
+        else:
+            return None
 
     if DEBUG_MODE_FINANCIALS:
         print(f"total_lt_liab: {total_lt_liab}")
@@ -171,7 +174,11 @@ def alternative_Total_Liab(driver):
 
 def get_financials(driver):
     price = get_price(driver)
+    if price is None:
+        return None
     shares = get_shares_outs(driver)
+    if shares is None:
+        return None
     try:
         financial_tab = WebDriverWait(driver, delay).until(EC.presence_of_element_located(
             (By.XPATH, """/html/body/form/div[3]/div/div[1]/div[2]/div/div[1]/div/div/input[5]""")))
@@ -180,6 +187,8 @@ def get_financials(driver):
         print(f"Loading took too much time!")
 
     cur_assets = get_cur_assets(driver)
+    if cur_assets is None:
+        return None
     st_liab = get_st_liab(driver)
     lt_liab = get_lt_liab(driver)
 
