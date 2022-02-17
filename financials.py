@@ -3,16 +3,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
-results = []
-DEBUG_MODE = True
+DEBUG_MODE_FINANCIALS = True
 delay = 2
 
 def get_status(driver):
+    status = None
     try:
-        status = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH,"""/html/body/form/div[3]/div/div[1]/div[1]/div[2]/div[1]/div[1]/table/tbody/tr[6]/td[2]"""))).text
-
+        status = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, """//td[contains(.,'Status:')]/following::td/span"""))).text
+        if DEBUG_MODE_FINANCIALS:
+            print(f"status:{status}")
     except TimeoutException:
-        print(f"Loading took too much time!")
+        print(f"Cannot find status")
 
     return status
 
@@ -70,6 +71,8 @@ def get_shares_outs(driver):
 def get_st_liab(driver):
     global delay
     t_st_liab = str()
+    debtors = None
+    rev_advance = None
 
     # scraping block
     try:
@@ -97,7 +100,7 @@ def get_st_liab(driver):
     if rev_advance:
         rev_advance = rev_advance.replace(",", "")
 
-    if DEBUG_MODE:
+    if DEBUG_MODE_FINANCIALS:
         print(f"t_st_liab: {t_st_liab}")
         print(f"debtors: {debtors}")
         print(f"rev_advance: {rev_advance}")
@@ -138,9 +141,8 @@ def get_lt_liab(driver):
     if total_lt_liab:
         total_lt_liab = total_lt_liab.replace(",", "")
 
-    if DEBUG_MODE:
+    if DEBUG_MODE_FINANCIALS:
         print(f"total_lt_liab: {total_lt_liab}")
-
 
     return int(total_lt_liab)
 
@@ -162,7 +164,7 @@ def alternative_Total_Liab(driver):
     if alt_total_liab:
         alt_total_liab = alt_total_liab.replace(",", "")
 
-    if DEBUG_MODE:
+    if DEBUG_MODE_FINANCIALS:
         print(f"alt_total_liab: {alt_total_liab}")
 
     return int(alt_total_liab)
