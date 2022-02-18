@@ -1,7 +1,7 @@
 from selenium import webdriver
 from financials import get_financials, get_status
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 results = []
 
 def compute_NNR(price, shares, cur_assets, st_liab, lt_liab):

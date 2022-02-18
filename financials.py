@@ -3,7 +3,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
-DEBUG_MODE_FINANCIALS = False
+DEBUG_MODE_FINANCIALS = True
 delay = 2
 
 def get_status(driver):
@@ -113,10 +113,12 @@ def get_st_liab(driver):
                 return None
     else:
         if debtors or rev_advance:
-            if rev_advance[0].isnumeric():
-                return int(rev_advance) + int(debtors)
+            print(rev_advance)
+            if type(rev_advance) is str:
+                if rev_advance[0].isnumeric():
+                    return int(rev_advance) + int(debtors)
             else:
-                return int(debtors)
+                return rev_advance + int(debtors)
         else:
             return None
 
@@ -191,5 +193,10 @@ def get_financials(driver):
         return None
     st_liab = get_st_liab(driver)
     lt_liab = get_lt_liab(driver)
+
+    if st_liab is None and lt_liab is None:
+        alt = alternative_Total_Liab(driver)
+        st_liab = alt/2
+        lt_liab = alt/2
 
     return [price, shares, cur_assets, st_liab, lt_liab]
