@@ -2,8 +2,8 @@ from selenium import webdriver
 from financials import get_financials, get_status
 import concurrent.futures
 
-#no. of threads for data pulling (too many = SSL ban)
-THREADS = 3
+#no. of threads for data pulling (more than 2 = SSL ban)
+THREADS = 2
 DEBUG_MODE = False
 results = []
 
