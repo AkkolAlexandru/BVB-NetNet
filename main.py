@@ -1,7 +1,10 @@
 from selenium import webdriver
 from financials import get_financials, get_status
+import concurrent.futures
 
-DEBUG_MODE = True
+#no. of threads for data pulling (too many = SSL ban)
+THREADS = 3
+DEBUG_MODE = False
 results = []
 
 def compute_NNR(price, shares, cur_assets, st_liab, lt_liab):
@@ -44,10 +47,13 @@ def run_scraper(symbol):
 with open("symbols.txt", "r") as file:
     symbols = file.read().splitlines()
 
-#final script run
+# start threads
 for symbol in symbols:
-    results.append(run_scraper(symbol))
-    print(results)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=THREADS) as executor:
+        futures = [executor.submit(run_scraper, symbol) for symbol in symbols]
+        for future in concurrent.futures.as_completed(futures):
+            results.append(future.result())
+            print(results)
 
 
 

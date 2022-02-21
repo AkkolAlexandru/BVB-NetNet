@@ -3,7 +3,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
-DEBUG_MODE_FINANCIALS = True
+DEBUG_MODE_FINANCIALS = False
 delay = 2
 
 def get_status(driver):
@@ -13,7 +13,8 @@ def get_status(driver):
         if DEBUG_MODE_FINANCIALS:
             print(f"status:{status}")
     except TimeoutException:
-        print(f"Cannot find status")
+        if DEBUG_MODE_FINANCIALS:
+            print(f"Cannot find status")
 
     return status
 
