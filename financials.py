@@ -100,27 +100,39 @@ def get_st_liab(driver):
     if rev_advance:
         rev_advance = rev_advance.replace(",", "")
 
+# parsing info
+    if t_st_liab:
+        if t_st_liab[0].isnumeric():
+            t_st_liab = int(t_st_liab)
+        else:
+            t_st_liab = 0
+    else:
+        t_st_liab = 0
+    if debtors:
+        if debtors[0].isnumeric():
+            debtors = int(debtors)
+        else:
+            debtors = 0
+    else:
+        debtors = 0
+    if rev_advance:
+        if rev_advance[0].isnumeric():
+            rev_advance = int(rev_advance)
+        else:
+            rev_advance = 0
+    else:
+        rev_advance = 0
+
     if DEBUG_MODE_FINANCIALS:
         print(f"t_st_liab: {t_st_liab}")
         print(f"debtors: {debtors}")
         print(f"rev_advance: {rev_advance}")
 
     if t_st_liab:
-        if t_st_liab[0].isnumeric() is False:
-            if debtors or rev_advance:
-                return int(rev_advance) + int(debtors)
-            else:
-                return None
-    else:
-        if debtors or rev_advance:
-            print(rev_advance)
-            if type(rev_advance) is str:
-                if rev_advance[0].isnumeric():
-                    return int(rev_advance) + int(debtors)
-            else:
-                return rev_advance + int(debtors)
-        else:
-            return None
+        return t_st_liab
+
+    t_st_liab = debtors + rev_advance
+
 
 
     return int(t_st_liab)
