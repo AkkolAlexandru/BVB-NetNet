@@ -1,6 +1,7 @@
 from selenium import webdriver
 from financials import get_financials, get_status
 import concurrent.futures
+import os
 
 #no. of threads for data pulling (more than 2 = SSL ban)
 THREADS = 2
@@ -47,15 +48,13 @@ def run_scraper(symbol):
 with open("symbols.txt", "r") as file:
     symbols = file.read().splitlines()
 
+no_of_items = len(symbols)
+counter = 1
 # start threads
 for symbol in symbols:
     with concurrent.futures.ThreadPoolExecutor(max_workers=THREADS) as executor:
         futures = [executor.submit(run_scraper, symbol) for symbol in symbols]
         for future in concurrent.futures.as_completed(futures):
             results.append(future.result())
-            print(results)
-
-
-
-
-
+            counter +=1
+            print(f'{counter}/{no_of_items} {future.result()}')
