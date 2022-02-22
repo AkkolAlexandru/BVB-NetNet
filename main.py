@@ -56,5 +56,12 @@ for symbol in symbols:
         futures = [executor.submit(run_scraper, symbol) for symbol in symbols]
         for future in concurrent.futures.as_completed(futures):
             results.append(future.result())
-            counter +=1
             print(f'{counter}/{no_of_items} {future.result()}')
+            if counter == no_of_items:
+                executor._threads.clear()
+                concurrent.futures.thread._threads_queues.clear()
+                break
+            counter += 1
+        break
+executor.shutdown(wait=False)
+print(results)
