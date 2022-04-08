@@ -135,7 +135,6 @@ def get_st_liab(driver):
     t_st_liab = debtors + rev_advance
 
 
-
     return int(t_st_liab)
 
 def get_lt_liab(driver):

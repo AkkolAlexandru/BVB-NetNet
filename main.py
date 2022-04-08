@@ -1,12 +1,12 @@
 from selenium import webdriver
 from financials import get_financials, get_status
 import concurrent.futures
-import os
 
 #no. of threads for data pulling (more than 2 = SSL ban)
 THREADS = 2
 DEBUG_MODE = False
 results = []
+outputFile = open('output.txt', 'w')
 
 def compute_NNR(price, shares, cur_assets, st_liab, lt_liab):
 
@@ -64,4 +64,5 @@ for symbol in symbols:
             counter += 1
         break
 executor.shutdown(wait=False)
+outputFile.write(str(results))
 print(results)
